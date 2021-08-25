@@ -33,7 +33,7 @@ chat_agent = OpenAIAgent(
     chatter_name=os.environ.get("CHATTER_NAME","HUMAN")
 )
 conversation_timer = None
-timer_expire_seconds = 60*60*3
+timer_expire_seconds = 60*60*1
 
 @app.route("/whatsapp/receive",methods=['POST'])
 def whatsapp_reply():
