@@ -31,20 +31,40 @@ chat_agent = OpenAIAgent(
     chatter_name=os.environ.get("CHATTER_NAME","HUMAN")
 )
 
-@app.route("/whatsapp/reply",methods=['POST'])
+@app.route("/whatsapp/receive",methods=['POST'])
 def whatsapp_reply():
-    request_params = request.args
-    logger.info(request_params)
-    logger.info(request.values)
-    logger.info(request.data)
-    logger.info(request.get_json())    
-    if 'From' in request_params:
-        if request_params['From'] not in allowed_phone_numbers:
+    reqvals = request.values
+    logger.info(reqvals)  
+    if 'From' in reqvals:
+        if request_params['From'] not in [allowed_phone_numbers]+['whatsapp:'+p for p in allowed_phone_numbers]:
             return "Receiver not allowed",400
+    else:
+        return "Receiver not allowed",400
     
-    receiver_number = request_params.get('From')
+    if 'Body' not in reqvals:
+        return "Receiver not allowed",400
+
+    sender_number = request_params.get('From')
+    sender_name = request_params.get('ProfileName','Human')
     message = request_params.get('Body')
-    message = request_params.get('Body')
+    chat_agent.set_chatter_name(sender_name)
+
+    logger.info(f"Processing incoming message: {message} from {sender_name} ({sender_number})")
+    reply = process_agent_reply(chat_agent,message,120)
+    logger.info(f'Reply: "{reply}"')
+
+    response = MessagingResponse()
+    response.message(reply)
+    logger.info("Conversation: "+chat_agent.conversation)
+
+    return str(response)
+
+
+@app.route("/whatsapp/status",methods=['POST'])
+def process_status():
+    reqvals = request.values
+    logger.info(reqvals)  
+    # return message
 
 
 @app.route('/receive', methods=['GET', 'POST'])
