@@ -64,7 +64,7 @@ def whatsapp_reply():
 def process_status():
     reqvals = request.values
     logger.info(reqvals)  
-    # return message
+    return jsonify(reqvals)
 
 
 @app.route('/receive', methods=['GET', 'POST'])
