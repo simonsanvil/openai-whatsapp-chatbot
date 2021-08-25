@@ -36,7 +36,7 @@ def whatsapp_reply():
     reqvals = request.values
     logger.info(reqvals)  
     if 'From' in reqvals:
-        if request_params['From'] not in [allowed_phone_numbers]+['whatsapp:'+p for p in allowed_phone_numbers]:
+        if reqvals['From'] not in [allowed_phone_numbers]+['whatsapp:'+p for p in allowed_phone_numbers]:
             return "Receiver not allowed",400
     else:
         return "Receiver not allowed",400
@@ -44,9 +44,9 @@ def whatsapp_reply():
     if 'Body' not in reqvals:
         return "Receiver not allowed",400
 
-    sender_number = request_params.get('From')
-    sender_name = request_params.get('ProfileName','Human')
-    message = request_params.get('Body')
+    sender_number = reqvals.get('From')
+    sender_name = reqvals.get('ProfileName','Human')
+    message = reqvals.get('Body')
     chat_agent.set_chatter_name(sender_name)
 
     logger.info(f"Processing incoming message: {message} from {sender_name} ({sender_number})")
