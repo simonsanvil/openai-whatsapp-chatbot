@@ -72,9 +72,6 @@ def send_whatsapp_message():
         body="Hello from Flask!")
     return "Message sent!"
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
-
 def send_message_to_whatsapp_via_twillio(msg,to_phone=None):
     from_phone = os.environ.get('FROM_WHATSAPP_NUMBER')
     if to_phone is None:
