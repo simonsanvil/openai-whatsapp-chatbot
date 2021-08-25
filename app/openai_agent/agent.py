@@ -10,7 +10,7 @@ from datetime import datetime
 from dataclasses import dataclass
 from typing import Union, List
 
-
+logging.basicConfig()
 
 class OpenAIAgent:
     '''
@@ -133,11 +133,11 @@ class OpenAIAgent:
     
     def get_available_engines(self):
         if os.environ.get('AVAILABLE_ENGINES') is not None:
-            print(os.environ.get('AVAILABLE_ENGINES'))
             return os.environ.get('AVAILABLE_ENGINES').split(",")
         return self.get_engines()
 
     def get_engines(self):
+        logging.debug("Obtaining list of engines")
         engines_json = openai.Engine.list()
         engines = list(map(lambda x: x['id'],engines_json['data']))
         return engines  
