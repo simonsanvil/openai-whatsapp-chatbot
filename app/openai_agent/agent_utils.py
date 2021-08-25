@@ -12,7 +12,9 @@ def process_agent_reply(chat_agent:OpenAIAgent,prompt:str,max_response_length:in
     if to_datetime("now")-to_datetime(chat_agent.conversation_start_time) > to_timedelta(3,'h'):
         logger.debug("Its been a while since your last conversation. Restarting conversation")
         chat_agent.start_conversation()
-    if re.match('.*speak with (?P<word_after>\w+).*',prompt.lower()):
+    change_engine_match = re.match('.*speak with (?P<word_after>\w+).*',prompt.lower())
+    if change_engine_match:
+        match = change_engine_match
         logger.debug("Checking if it is needed to switch engine for prompt: "+prompt)
         word_after = match.group('word_after')
         logger.debug(f"Checking if {word_after} is an available engine")
