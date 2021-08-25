@@ -36,7 +36,6 @@ chat_agent = OpenAIAgent(
 
 timer_expire_seconds = 60*60*3
 scheduler = BackgroundScheduler()
-current_job = None
 atexit.register(lambda: scheduler.shutdown())
 
 @app.route("/whatsapp/receive",methods=['POST'])
@@ -46,7 +45,9 @@ def whatsapp_reply():
         logger.warning("Timer Started")
         scheduler.start()
     else:
-        scheduler.resume()
+        scheduler.remove_job('conversation_restart')
+        scheduler.add_job(func=restart_conversation, trigger="interval", seconds=timer_expire_seconds,id='conversation_restart')
+        # scheduler.resume()
 
     reqvals = request.values
     logger.info(reqvals)  
