@@ -21,7 +21,7 @@ logger.setLevel(logging.DEBUG)
 load_dotenv(find_dotenv())
 account_sid = os.environ.get("TWILLIO_ACCOUNT_SID") 
 auth_token = os.environ.get("TWILLIO_AUTH_TOKEN") 
-allowed_phone_numbers = os.environ.get("ALLOWED_PHONE_NUMBERS").split(",")
+allowed_phone_numbers = os.environ.get("ALLOWED_PHONE_NUMBERS",'').split(",")
 twillio_client = Client(account_sid, auth_token)
 
 app = Flask(__name__)
@@ -67,8 +67,8 @@ Flask app to send whatsapp messages to a phone number
 @app.route("/send")
 def send_whatsapp_message():
     twillio_client.messages.create(
-        to=os.environ.get("PHONE_NUMBER"), 
-        from_=os.environ.get("TWILLIO_PHONE_NUMBER"),
+        to=os.environ.get("TO_WHATSAPP_NUMBER"), 
+        from_=os.environ.get("FROM_WHATSAPP_NUMBER"),
         body="Hello from Flask!")
     return "Message sent!"
 
