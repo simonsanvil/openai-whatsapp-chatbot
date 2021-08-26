@@ -66,12 +66,12 @@ class OpenAIAgent:
     '''
 
     START_TEMPLATE = '''
-    The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. The AI is talking with a person named {HUMAN}.
-    When the AI doesnt understand a question it replies with "I dont understand".
-    {AGENT_NAME}: Hi. My name is {AGENT_NAME}, I'm your AI assistant.
+The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. The AI is talking with a person named {HUMAN}.
+When the AI doesnt understand a question it replies with "I dont understand".
+{AGENT_NAME}: Hi. My name is {AGENT_NAME}, I'm your AI assistant.
     '''.strip() + '\n'
 
-    MSG_TEMPLATE = '''{HUMAN}: {MSG}\n{AGENT_NAME}: '''
+    MSG_TEMPLATE = '''{HUMAN}:{MSG}\n{AGENT_NAME}: '''
 
     def  __init__(
             self,

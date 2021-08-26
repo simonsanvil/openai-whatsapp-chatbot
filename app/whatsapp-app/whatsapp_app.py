@@ -22,7 +22,7 @@ logger = logging.getLogger("APP")
 logger.setLevel(logging.DEBUG)
 
 load_dotenv(find_dotenv())
-account_sid = os.environ.get("TWILLIO_ACCOUNT_SID") 
+account_sid = os.environ.get("TWILLIO_ACCOUNT_SID")
 auth_token = os.environ.get("TWILLIO_AUTH_TOKEN") 
 allowed_phone_numbers = os.environ.get("ALLOWED_PHONE_NUMBERS",'').split(",")
 twillio_client = Client(account_sid, auth_token)
