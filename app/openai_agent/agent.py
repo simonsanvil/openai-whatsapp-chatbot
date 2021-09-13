@@ -78,7 +78,7 @@ When the AI doesnt understand a question it replies with "I dont understand".
             chatter_name:str="Human",
             agent_name:str=None,#"GTP",
             api_key:str=None,
-            engine:Union['davinci','curie','babbage','ada']="davinci",
+            engine:Union['davinci','curie','babbage','ada','davinci-codex']="davinci-codex",
             temperature:float=0.9,
             top_p:float=1,
             frequency_penalty:float=0,
@@ -255,6 +255,20 @@ When the AI doesnt understand a question it replies with "I dont understand".
         reply_txt = re.sub("(\\n)*$","",completion.choices[0].text.strip())
         self.__dict__['_conversation__'] = self.conversation + new_prompt + reply_txt.strip() + '\n'
         return reply_txt
+    
+    def prompt_codex(self,prompt,max_repsonse_length=150):
+        params = self.params.copy()
+        params['engine'] = 'davinci-codex'
+        completion = openai.Completion.create(prompt=prompt.strip(),**params)
+        return re.sub("(\\n)*$","",completion.choices[0].text.strip()).strip()
+    
+    def prompt_davinci(self,prompt,max_repsonse_length=150):
+        params = self.params.copy()
+        params['engine'] = 'davinci'
+        completion = openai.Completion.create(prompt=prompt.strip(),**params)
+        return re.sub("(\\n)*$","",completion.choices[0].text.strip()).strip()
+
+
 
     
 

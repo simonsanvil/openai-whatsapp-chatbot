@@ -12,6 +12,15 @@ def process_agent_reply(chat_agent:OpenAIAgent,prompt:str,max_response_length:in
     if to_datetime("now")-to_datetime(chat_agent.conversation_start_time) > to_timedelta(3,'h'):
         logger.debug("Its been a while since your last conversation. Restarting conversation")
         chat_agent.start_conversation()
+    
+    if prompt.strip().lower().startswith('ask codex'):
+        prompt_ = prompt.lower().split('ask codex ')[1].strip()
+        if prompt_:
+            return chat_agent.prompt_codex(prompt_)
+    elif prompt.strip().lower().startswith('ask davinci'):
+        prompt_ = prompt.lower().split('ask davinci ')[1].strip()
+        return chat_agent.prompt_davinci(prompt_)
+
     change_engine_match = re.match('.*speak with (?P<word_after>[A-Za-z0-9-\-\_]+)',prompt.lower())
     if change_engine_match:
         match = change_engine_match
