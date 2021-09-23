@@ -1,7 +1,7 @@
 OpenAI Chatbot
 ==============================
 
-A web-based chatbot that uses the OpenAI API to leverage the power of their famous transformer-based language models such as GTP3 and Codex to reply to incoming messages from whatsapp or via http
+A web-based chatbot that uses OpenAI's famous transformer-based language models such as GTP3 and Codex to reply to incoming messages from whatsapp or via http.
 
 Requires a valid key to OpenAI's API and access to their GTP-based engines (davinci, codex, ada, babbage, etc).
 
