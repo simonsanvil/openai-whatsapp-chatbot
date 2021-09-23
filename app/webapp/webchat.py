@@ -6,7 +6,7 @@ from flask import Flask, request, render_template, url_for, jsonify
 from pandas import to_datetime, to_timedelta
 
 from ..openai_agent.agent import OpenAIAgent
-from ..openai_agent.agent_utils import process_agent_reply
+from ..openai_agent.agent_utils import process_message_and_get_reply
 
 from dotenv import find_dotenv, load_dotenv
 from ast import literal_eval
@@ -29,7 +29,7 @@ def bot():
     incoming_msg = request.values.get('Body', '')
     resp = MessagingResponse()
     msg = resp.message()
-    reply = process_agent_reply(chat_agent,incoming_msg,120)
+    reply = process_message_and_get_reply(chat_agent,incoming_msg,120)
     msg.body(reply)
     return str(resp)
 
@@ -38,7 +38,7 @@ def chat(msg):
     if not chat_agent.is_conversation_active:
         chat_agent.start_conversation()
     logger.info("Previous conversation history: "+chat_agent.conversation) 
-    reply = process_agent_reply(chat_agent,msg,120)
+    reply = process_message_and_get_reply(chat_agent,msg,120)
     conversation = chat_agent.conversation #chat_agent.make_chat_prompt(msg,False)
     conversation =  conversation#+reply
     conversation_html = conversation.replace(chat_agent.START_TEMPLATE,"<strong>"+chat_agent.START_TEMPLATE+"</strong>").replace("\n","<br>") 
@@ -65,7 +65,7 @@ def api_chat():
             return jsonify({'error': 'missing required "message" field'}), 400
         msg = data.get('message')
         reply_length = data.get("length",120)
-        reply = process_agent_reply(chat_agent,msg,reply_length)
+        reply = process_message_and_get_reply(chat_agent,msg,reply_length)
     else:
         reply = 'I do not understand you!'
         return jsonify({'reply': reply})

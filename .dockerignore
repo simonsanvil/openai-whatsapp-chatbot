@@ -1,0 +1,6 @@
+.python_packages
+__pycache__
+.env
+local.settings.json
+notebooks/
+docs/

@@ -12,7 +12,7 @@ from flask import Flask, request, render_template, url_for, jsonify
 from pandas import to_datetime, to_timedelta
 
 from ..openai_agent.agent import OpenAIAgent
-from ..openai_agent.agent_utils import process_agent_reply
+from ..openai_agent.agent_utils import process_message_and_get_reply
 from ..utils.twilio_utils import send_whatsapp_message
 
 import atexit
@@ -69,7 +69,7 @@ def whatsapp_reply():
     chat_agent.set_chatter_name(sender_name)
 
     logger.info(f"Processing incoming message: {message} from {sender_name} ({sender_number})")
-    reply = process_agent_reply(chat_agent,message,200)
+    reply = process_message_and_get_reply(chat_agent,message,200)
     logger.info(f'Reply: "{reply}"')
 
     response = MessagingResponse()

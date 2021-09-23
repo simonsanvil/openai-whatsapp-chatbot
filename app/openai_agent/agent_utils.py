@@ -8,7 +8,7 @@ logging.basicConfig()
 logger = logging.getLogger("APP")
 logger.setLevel(logging.DEBUG)
 
-def process_agent_reply(chat_agent:OpenAIAgent,prompt:str,max_response_length:int=150):
+def process_message_and_get_reply(chat_agent:OpenAIAgent,prompt:str,max_response_length:int=150):
     if to_datetime("now")-to_datetime(chat_agent.conversation_start_time) > to_timedelta(3,'h'):
         logger.debug("Its been a while since your last conversation. Restarting conversation")
         chat_agent.start_conversation()
