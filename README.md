@@ -21,7 +21,7 @@ Requirements
 Configuration
 --------------------
 
-You need to set the OpenAI key as an environmental variables or add it to a [.env](https://github.com/laravel/laravel/blob/master/.env.example) file.:
+You need to set the OpenAI API key as an environmental variables or add it to a [.env](https://github.com/laravel/laravel/blob/master/.env.example) file in the working directory where the app will run:
 ```bash
 export OPENAI_API_KEY=[YOUR OPENAI API ACCESS KEY]
 ```
