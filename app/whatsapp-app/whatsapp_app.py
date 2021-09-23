@@ -38,7 +38,7 @@ chat_agent = OpenAIAgent(
 )
 
 num_minutes_conversation_expires = int(os.environ.get("CONVERSATION_EXPIRES_MINS",60*3))
-max_tokens = int(os.environ.get("CONVERSATION_EXPIRES_MINS",150))
+max_tokens = int(os.environ.get("MAX_TOKENS",150))
 timer_expire_seconds = 60*60*num_minutes_conversation_expires
 scheduler = BackgroundScheduler()
 atexit.register(lambda: scheduler.shutdown())
@@ -71,7 +71,7 @@ def whatsapp_reply():
     chat_agent.set_chatter_name(sender_name)
 
     logger.info(f"Processing incoming message: {message} from {sender_name} ({sender_number})")
-    reply = process_message_and_get_reply(chat_agent,message,200)
+    reply = process_message_and_get_reply(chat_agent,message,max_tokens)
     logger.info(f'Reply: "{reply}"')
 
     response = MessagingResponse()
