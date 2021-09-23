@@ -132,7 +132,7 @@ When the AI doesnt understand a question it replies with "I dont understand".
         return self.agent_name_ if self.agent_name_ not in self.get_available_engines() else self.engine.upper()
     
     def get_available_engines(self):
-        if os.environ.get('AVAILABLE_ENGINES') is not None:
+        if os.environ.get('AVAILABLE_ENGINES'):
             return os.environ.get('AVAILABLE_ENGINES').split(",")
         return self.get_engines()
 
