@@ -13,13 +13,18 @@ def process_agent_reply(chat_agent:OpenAIAgent,prompt:str,max_response_length:in
         logger.debug("Its been a while since your last conversation. Restarting conversation")
         chat_agent.start_conversation()
     
-    if prompt.strip().lower().startswith('ask codex'):
-        prompt_ = prompt.lower().split('ask codex ')[1].strip()
-        if prompt_:
-            return chat_agent.prompt_codex(prompt_)
-    elif prompt.strip().lower().startswith('ask davinci'):
-        prompt_ = prompt.lower().split('ask davinci ')[1].strip()
-        return chat_agent.prompt_davinci(prompt_)
+    prompt = prompt.strip().lower()
+    engines = chat_agent.get_available_engines()
+    for engine in engines:
+        if 'codex' in engine:
+            engines += ['codex']
+            break
+    if re.match('ask (' + '|'.join(engines) + ') .+'):
+        agent_to_prompt = prompt.lower().split(' ')[1]
+        new_prompt = ' '.join(agent_to_prompt.split(' ')[3:]).strip()
+        if agent_to_prompt == 'codex':
+            return chat_agent.prompt_codex(new_prompt)
+        return chat_agent.prompt_agent(new_prompt)
 
     change_engine_match = re.match('.*speak with (?P<word_after>[A-Za-z0-9-\-\_]+)',prompt.lower())
     if change_engine_match:
@@ -28,7 +33,6 @@ def process_agent_reply(chat_agent:OpenAIAgent,prompt:str,max_response_length:in
         word_after = match.group('word_after')
         logger.debug(f"Checking if {word_after} is an available engine")
         if word_after.lower() in chat_agent.available_engines:
-            print(chat_agent.available_engines)
             logger.debug(f"{word_after} is an available engine")
             prev_conversation = chat_agent.conversation
             chat_agent.set_gtp3_params(engine=word_after.lower())

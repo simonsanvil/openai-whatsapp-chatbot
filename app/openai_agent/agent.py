@@ -14,7 +14,7 @@ logging.basicConfig()
 
 class OpenAIAgent:
     '''
-    A chatting agent to have a conversation with [OpenAI's](https://beta.openai.com/) Codex or GTP models.
+    A chatting agent to have a conversation with [OpenAI's](https://beta.openai.com/) GTP models (Codex, Davinci, Ada, ...).
 
     Params
     -------
@@ -256,17 +256,21 @@ When the AI doesnt understand a question it replies with "I dont understand".
         self.__dict__['_conversation__'] = self.conversation + new_prompt + reply_txt.strip() + '\n'
         return reply_txt
     
-    def prompt_codex(self,prompt,max_repsonse_length=150):
+    def prompt_agent(self,prompt:str,agent:str,max_response_length:int=150,**parameters):
         params = self.params.copy()
-        params['engine'] = 'davinci-codex'
+        if agent not in self.get_available_engines():
+            raise AttributeError(f'"{agent}" is not an available engine.')
+        for param in parameters:
+            params[param] = parameters[param]
+        params['engine'] = agent
         completion = openai.Completion.create(prompt=prompt.strip(),**params)
         return re.sub("(\\n)*$","",completion.choices[0].text.strip()).strip()
+
+    def prompt_codex(self,prompt,max_repsonse_length=150,**params):
+        return self.prompt_agent(prompt,'davinci-codex',max_repsonse_length,**params)
     
     def prompt_davinci(self,prompt,max_repsonse_length=150):
-        params = self.params.copy()
-        params['engine'] = 'davinci'
-        completion = openai.Completion.create(prompt=prompt.strip(),**params)
-        return re.sub("(\\n)*$","",completion.choices[0].text.strip()).strip()
+        return self.prompt_agent(prompt,'davinci',max_repsonse_length,**params)
 
 
 

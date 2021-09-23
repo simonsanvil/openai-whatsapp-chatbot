@@ -13,9 +13,12 @@ from pandas import to_datetime, to_timedelta
 
 from ..openai_agent.agent import OpenAIAgent
 from ..openai_agent.agent_utils import process_agent_reply
+from ..utils.twilio_utils import send_whatsapp_message
 
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
+
+import argparse
 
 logging.basicConfig()
 logger = logging.getLogger("APP")
@@ -25,7 +28,7 @@ load_dotenv(find_dotenv())
 account_sid = os.environ.get("TWILLIO_ACCOUNT_SID")
 auth_token = os.environ.get("TWILLIO_AUTH_TOKEN") 
 allowed_phone_numbers = os.environ.get("ALLOWED_PHONE_NUMBERS",'').split(",")
-twillio_client = Client(account_sid, auth_token)
+twilio_client = Client(account_sid, auth_token)
 
 app = Flask(__name__)
 chat_agent = OpenAIAgent(
@@ -41,12 +44,12 @@ atexit.register(lambda: scheduler.shutdown())
 @app.route("/whatsapp/receive",methods=['POST'])
 def whatsapp_reply():
     if not scheduler.state:
-        scheduler.add_job(func=restart_conversation, trigger="interval", seconds=timer_expire_seconds,id='conversation_restart')
+        scheduler.add_job(func=conversation_timer_callback, trigger="interval", seconds=timer_expire_seconds,id='conversation_restart')
         logger.warning("Timer Started")
         scheduler.start()
     else:
         scheduler.remove_job('conversation_restart')
-        scheduler.add_job(func=restart_conversation, trigger="interval", seconds=timer_expire_seconds,id='conversation_restart')
+        scheduler.add_job(func=conversation_timer_callback, trigger="interval", seconds=timer_expire_seconds,id='conversation_restart')
         # scheduler.resume()
 
     reqvals = request.values
@@ -66,14 +69,23 @@ def whatsapp_reply():
     chat_agent.set_chatter_name(sender_name)
 
     logger.info(f"Processing incoming message: {message} from {sender_name} ({sender_number})")
-    reply = process_agent_reply(chat_agent,message,120)
+    reply = process_agent_reply(chat_agent,message,200)
     logger.info(f'Reply: "{reply}"')
 
     response = MessagingResponse()
     response.message(reply)
-    logger.info("Conversation: "+chat_agent.conversation)
+    logger.info("Conversation: \n"+chat_agent.conversation)
 
     return str(response)
+
+def conversation_timer_callback():
+    '''
+    Restarts conversation due to timer
+    '''
+    logging.info('Restarting conversation due to timer')
+    chat_agent.start_conversation()
+    send_whatsapp_message(twilio_client,"It's been a while since our last conversation. I've forgotten all about it already")
+    scheduler.pause()
 
 
 @app.route("/whatsapp/status",methods=['POST'])
@@ -83,45 +95,15 @@ def process_status():
     return jsonify(reqvals)
 
 
-@app.route('/receive', methods=['GET', 'POST'])
-def receive_whatsapp_message():
-    print("Received message")
-    logger.info(request.values)
-    body = request.values.get('Body',None)
-    print(body)
-    response = MessagingResponse()
-    if body.lower() == "hey":
-        response.message("Hey there, nice to hear from you!")
-    else:
-        response.message("Hey, I can't hear you!")
-    print(str(response))
-    return str(response)
-
-def restart_conversation():
-    logging.info('Restarting conversation due to timer')
-    chat_agent.start_conversation()
-    send_whatsapp_message("It's been a while since our last conversation. Let me remind you I dont have a very good memory 😅")
-    # scheduler.remove_job('conversation_restart')
-    scheduler.pause()
-
-
-def send_whatsapp_message(msg,to_phone=None):
-    '''
-    Sends a one-way whatsapp message via Twillio to the given phone number
-    '''
-    from_phone = os.environ.get('FROM_WHATSAPP_NUMBER')
-    if to_phone is None:
-        to_phone = os.environ.get('TO_WHATSAPP_NUMBER')
-
-    if from_phone is None or to_phone is None:
-        raise Exception('Valid sender and receiver phone numbers must be given')
-
-    message = twillio_client.messages.create( 
-        from_=f'whatsapp:{from_phone}',  
-        body=msg,      
-        to=f'whatsapp:{to_phone}' 
-    )
-
-    return message.sid
-
-
+if __name__ == '__main__':
+    load_dotenv(find_dotenv())
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', '--to_phone', help="Phone number to send whatsapp message to")
+    parser.add_argument('-m', '--msg', help="Whatsapp message to send to phone number")
+    args = parser.parse_args()
+    account_sid = os.environ.get("TWILLIO_ACCOUNT_SID")
+    auth_token = os.environ.get("TWILLIO_AUTH_TOKEN") 
+    allowed_phone_numbers = os.environ.get("ALLOWED_PHONE_NUMBERS",'').split(",")
+    twilio_client = Client(account_sid, auth_token)
+    send_whatsapp_message(twilio_client,args['m'],args['p'])
+    
