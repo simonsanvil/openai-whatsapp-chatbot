@@ -43,7 +43,7 @@ export FROM_WHATSAPP_NUMBER=[YOUR ASSIGNED TWILIO WHATSAPP NUMBER]
 export MAX_TOKENS=[NUMBER OF MAX TOKENS IN EACH REPLY] #=150
 export CONVERSATION_EXPIRES_MINS=[NUMBER OF MINUTES UNTIL A CONVERSATION IS ERASED FROM MEMORY] #=180
 ```
-- It is also enough to have these variables in the [.env](https://github.com/laravel/laravel/blob/master/.env.example) file in the working directory where the app is running.
+- It is also enough to have these variables in a [.env](https://github.com/laravel/laravel/blob/master/.env.example) file in the working directory where the app is running.
 
 
 Running the app
