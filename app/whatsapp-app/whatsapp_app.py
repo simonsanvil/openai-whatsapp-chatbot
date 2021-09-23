@@ -37,7 +37,9 @@ chat_agent = OpenAIAgent(
     chatter_name=os.environ.get("CHATTER_NAME","HUMAN")
 )
 
-timer_expire_seconds = 60*60*3
+num_minutes_conversation_expires = int(os.environ.get("CONVERSATION_EXPIRES_MINS",60*3))
+max_tokens = int(os.environ.get("CONVERSATION_EXPIRES_MINS",150))
+timer_expire_seconds = 60*60*num_minutes_conversation_expires
 scheduler = BackgroundScheduler()
 atexit.register(lambda: scheduler.shutdown())
 

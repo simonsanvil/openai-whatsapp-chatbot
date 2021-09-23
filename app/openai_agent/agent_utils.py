@@ -19,7 +19,7 @@ def process_message_and_get_reply(chat_agent:OpenAIAgent,prompt:str,max_response
         if 'codex' in engine:
             engines += ['codex']
             break
-    if re.match('ask (' + '|'.join(engines) + ') .+'):
+    if re.match('ask (' + '|'.join(engines) + ') .+',prompt.lower()):
         agent_to_prompt = prompt.lower().split(' ')[1]
         new_prompt = ' '.join(agent_to_prompt.split(' ')[3:]).strip()
         if agent_to_prompt == 'codex':
