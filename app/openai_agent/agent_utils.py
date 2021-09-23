@@ -23,7 +23,9 @@ def process_message_and_get_reply(chat_agent:OpenAIAgent,prompt:str,max_response
         agent_to_prompt = prompt.lower().split(' ')[1]
         new_prompt = ' '.join(agent_to_prompt.split(' ')[3:]).strip()
         if agent_to_prompt == 'codex':
+            logger.debug("Prompting codex agent")
             return chat_agent.prompt_codex(new_prompt)
+        logger.debug(f'Prompting agent "{agent_to_prompt}"')
         return chat_agent.prompt_agent(new_prompt,agent_to_prompt)
 
     change_engine_match = re.match('.*speak with (?P<word_after>[A-Za-z0-9-\-\_]+)',prompt.lower())
