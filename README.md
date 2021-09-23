@@ -16,12 +16,12 @@ Requirements
 -----------
 
 -  python>=3.7
-- A valid [OpenAI API](https://beta.openai.com/) key 
+- A valid [OpenAI API](https://beta.openai.com/) key
 
 Configuration
 --------------------
 
-You need to set the OpenAI API key as an environmental variables or add it to a [.env](https://github.com/laravel/laravel/blob/master/.env.example) file in the working directory where the app will run:
+You need to set the OpenAI API key as an environmental variables or add it to a [.env](https://github.com/laravel/laravel/blob/master/.env.example) file in the working directory where the app will be running:
 ```bash
 export OPENAI_API_KEY=[YOUR OPENAI API ACCESS KEY]
 ```
