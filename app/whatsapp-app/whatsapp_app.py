@@ -80,6 +80,12 @@ def whatsapp_reply():
 
     return str(response)
 
+@app.route("/whatsapp/status",methods=['POST'])
+def process_status():
+    reqvals = request.values
+    logger.info(reqvals)
+    return jsonify(reqvals)
+
 def conversation_timer_callback():
     '''
     Restarts conversation due to timer
@@ -88,14 +94,6 @@ def conversation_timer_callback():
     chat_agent.start_conversation()
     send_whatsapp_message(twilio_client,"It's been a while since our last conversation. I've forgotten all about it already")
     scheduler.pause()
-
-
-@app.route("/whatsapp/status",methods=['POST'])
-def process_status():
-    reqvals = request.values
-    logger.info(reqvals)
-    return jsonify(reqvals)
-
 
 if __name__ == '__main__':
     load_dotenv(find_dotenv())
