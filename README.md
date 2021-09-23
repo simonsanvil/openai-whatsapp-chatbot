@@ -26,7 +26,7 @@ You need to set the OpenAI API key as an environmental variables or add it to a 
 export OPENAI_API_KEY=[YOUR OPENAI API ACCESS KEY]
 ```
 
-### To run the Whatsapp chatbot (optional):
+### To run the Whatsapp chatbot:
 - Have a [Twillio account](https://www.twilio.com/) and [setup a Twilio whatsapp messages sandbox](https://console.twilio.com/us1/develop/sms/try-it-out/whatsapp-learn?frameUrl=%2Fconsole%2Fsms%2Fwhatsapp%2Flearn%3Fx-target-region%3Dus1) with the */whatsapp/receive* endpoint of this app as its callback url when a message comes in and the */whatsapp/status* as its status callback url. (Follow Twillio's tutorial)
 - Set the following environmental variables: (or add them to the same .env file as the one with the api key).
 ```bash
