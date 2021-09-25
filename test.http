@@ -1,4 +1,4 @@
-###
+### Obtaining a reply from an engine to a custom message
 POST /api/chat HTTP/1.1
 Host: localhost:8000
 Content-Type: application/json
@@ -9,13 +9,14 @@ Content-Type: application/json
     "max_tokens": 100
 }
 
-###
+### Obtain direct completions from an specified agent
 POST /api/completion HTTP/1.1
 Host: localhost:8000
 Content-Type: application/json
 
 {
-    "message": "import pandas\n#Read heads.csv",
+    "message": "import pandas as pd\npd.read",
     "engine": "davinci-codex",
-    "max_tokens": 300
+    "max_tokens": 20,
+    "temperature":0.5
 }
