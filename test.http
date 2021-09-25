@@ -1,1 +1,21 @@
-POST
+###
+POST /api/chat HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+
+{
+    "message": "Hey",
+    "engine": "davinci",
+    "max_tokens": 100
+}
+
+###
+POST /api/completion HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+
+{
+    "message": "import pandas\n#Read heads.csv",
+    "engine": "davinci-codex",
+    "max_tokens": 300
+}
