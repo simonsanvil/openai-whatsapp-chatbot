@@ -137,6 +137,8 @@ JSON response:
 
 ### Whatsapp Chatbot
 
+After following the instructions in the Twilio for Whatsapp Sandbox you should be able to join your sandbox and start chatting with the agent inmediately
+
 <img src="https://i.imgur.com/1tD5o9h.jpeg" width="450"/>
 
 
