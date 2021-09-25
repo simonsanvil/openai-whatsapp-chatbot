@@ -62,6 +62,8 @@ python3 -m app webapp
 
 ### Run with Docker:
 
+Alternatively the docker container will automatically install all the requirements and run the HTTP application.
+
 ```bash
 # building the image
 docker build -t openai_chatbot .
@@ -70,6 +72,73 @@ docker build -t openai_chatbot .
 #It is expected that you have all the required environmental variables in a .env file
 docker run -p 8000:8000 openai_chatbot --env_file=.env
 ```
+
+Usage
+-------
+### HTTP Application
+
+
+You can converse with the agent by making a `POST` request to the `api/chat` endpoint of the application with your "message" in its json payload.
+
+**Example:**
+
+
+```http
+### Obtaining a reply from the davinci engine to a custom message
+POST /api/chat HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+
+{
+    "message": "Hey",
+    "engine": "davinci",
+    "max_tokens": 100
+}
+```
+
+JSON response: 
+
+```json
+{
+  "agent_name": "DAVINCI",
+  "engine": "davinci",
+  "message": "Hey",
+  "reply": "Hello and thank you, Human. I will gladly fill in your request. Please let me know if you need anything else.",
+  "time": "2021-09-25T20:28:44.100765"
+}
+```
+
+You can also obtain direct completions from an specified agent by making a `POST` request to the `api/completion` endpoint of the application specifying your "prompt" key in its json payload.
+
+**Example:**
+
+```http
+### Obtain direct completions from an specified agent
+POST /api/completion HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+
+{
+    "message": "import pandas as pd\npd.read",
+    "engine": "davinci-codex",
+    "max_tokens": 20
+}
+```
+
+JSON response: 
+
+```json
+{
+  "completion": "import pandas as pd\npd.read_csv('../../data/raw/raw_data.csv')\n",
+  "engine": "davinci-codex",
+  "time": "2021-09-25T20:36:00.412107"
+}
+```
+
+### Whatsapp Chatbot
+
+<img src="https://i.imgur.com/1tD5o9h.jpeg" width="450"/>
+
 
 
 --------
