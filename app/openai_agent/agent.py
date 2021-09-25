@@ -57,18 +57,18 @@ class OpenAIAgent:
     ```
 
     ```bash
-    The following is a conversation with an AI assistant. The assistant is helpful, polite, creative, clever, and very friendly. The AI is talking with a person named Simon.
+    The following is a conversation with an AI. The AI is helpful, polite, creative, clever, and very friendly. The AI is talking with a person named Simon.
 
-    GTP-3: Hi. My name is GTP-3, I'm your AI assistant.
+    GTP-3: Hi. My name is GTP-3.
     Simon: Hi, what's up?
     GTP-3: I'm using this conversation to train myself, so thanks for doing this.
     ```
     '''
 
     START_TEMPLATE = '''
-The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. The AI is talking with a person named {HUMAN}.
+The following is a conversation with an AI. The AI is helpful, creative, clever, and very friendly. The AI is talking with a person named {HUMAN}.
 When the AI doesnt understand a question it replies with "I dont understand".
-{AGENT_NAME}: Hi. My name is {AGENT_NAME}, I'm your AI assistant.
+{AGENT_NAME}: Hi. My name is {AGENT_NAME}.
     '''.strip() + '\n'
 
     MSG_TEMPLATE = '''{HUMAN}:{MSG}\n{AGENT_NAME}: '''
@@ -132,11 +132,17 @@ When the AI doesnt understand a question it replies with "I dont understand".
         return self.agent_name_ if self.agent_name_ not in self.get_available_engines() else self.engine.upper()
     
     def get_available_engines(self):
+        '''
+        Get a list of the engines available to the agent
+        '''
         if os.environ.get('AVAILABLE_ENGINES'):
             return os.environ.get('AVAILABLE_ENGINES').split(",")
         return self.get_engines()
 
     def get_engines(self):
+        '''
+        Get a list of the openai api engines
+        '''
         logging.debug("Obtaining list of engines")
         engines_json = openai.Engine.list()
         engines = list(map(lambda x: x['id'],engines_json['data']))
@@ -148,15 +154,37 @@ When the AI doesnt understand a question it replies with "I dont understand".
         self.__dict__[name] = value
     
     def set_chatter_name(self,name):
+        '''
+        Set the name of the user chatting with the agent
+        '''
         self.chatter_name = name
     
     def set_agent_name(self,name):
+        '''
+        Set the name of the agent chatting with the user
+        '''
         self.agent_name = name
     
-    def set_gtp3_param(self,param,val):
+    def set_agent_param(
+        self,
+        param:Union['temperature','top_p','frequency_penalty','presence_penalty','max_tokens'],
+        val:Union[float,str]
+    ):
+        '''
+        Set parameter `param` of the GTP agent completion to value `val`
+        
+        For info about the parameters see:
+        https://beta.openai.com/docs/api-reference/completions
+        '''
         self.params[param]=val
 
-    def set_gtp3_params(self,**params):
+    def set_agent_params(self,**params):
+        '''
+        Set the parametets of the GTP agent completions
+
+        For info about the parameters see:
+        https://beta.openai.com/docs/api-reference/completions
+        '''
         for param in params:
             self.params[param] = params[param]
         
@@ -263,6 +291,7 @@ When the AI doesnt understand a question it replies with "I dont understand".
         for param in parameters:
             params[param] = parameters[param]
         params['engine'] = agent
+        params['max_tokens'] = max_response_length
         completion = openai.Completion.create(prompt=prompt.strip(),**params)
         return re.sub("(\\n)*$","",completion.choices[0].text.strip()).strip()
 
@@ -271,6 +300,9 @@ When the AI doesnt understand a question it replies with "I dont understand".
     
     def prompt_davinci(self,prompt,max_repsonse_length=150):
         return self.prompt_agent(prompt,'davinci',max_repsonse_length,**params)
+    
+    def copy(self):
+        return copy.deepcopy(self)
 
 
 
