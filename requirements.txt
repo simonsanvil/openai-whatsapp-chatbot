@@ -11,7 +11,7 @@ PyJWT==1.7.1
 pytz==2019.3
 six==1.13.0
 twilio==6.33.1
-urllib3==1.25.7
+urllib3>=1.26.5
 Werkzeug==0.16.0
 python-dotenv>=0.5.1
 openai
