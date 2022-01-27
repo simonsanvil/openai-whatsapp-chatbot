@@ -1,12 +1,12 @@
-OpenAI Chatbot
+GTP3 Chatbot
 ==============================
 
-[![Build and deploy Python app to Azure Web App - openai-chatbot](https://github.com/simonsanvil/openai-whatsapp-chatbot/actions/workflows/master_openai-chatbot.yml/badge.svg)](https://github.com/simonsanvil/openai-whatsapp-chatbot/actions/workflows/master_openai-chatbot.yml)
+[![Build and deploy Python app to Azure Web App - openai-chatbot](https://github.com/simonsanvil/GTP3-Whatsapp-chatbot/actions/workflows/master_openai-chatbot.yml/badge.svg)](https://github.com/simonsanvil/openai-whatsapp-chatbot/actions/workflows/master_openai-chatbot.yml)
 
-A web-based chatbot that uses OpenAI's famous transformer-based language models such as GTP3 and Codex to reply to incoming messages from whatsapp or via http.
+A web-based chatbot that uses OpenAI's famous transformer-based language model GTP3 (Davinci, Codex) to reply to incoming messages from WhatsApp or via HTTP.
 
 Requires a valid key to OpenAI's API and access to their GTP-based engines (davinci, codex, ada, babbage, etc).
-
+    
 Installation
 ------
 ```bash
