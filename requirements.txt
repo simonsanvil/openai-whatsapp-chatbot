@@ -7,7 +7,7 @@ idna==2.8
 itsdangerous==1.1.0
 jinja2>=2.11.3
 MarkupSafe==1.1.1
-PyJWT==1.7.1
+pyjwt>=2.4.0
 pytz==2019.3
 six==1.13.0
 twilio==6.33.1
