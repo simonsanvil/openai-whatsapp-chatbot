@@ -39,11 +39,12 @@ export FROM_WHATSAPP_NUMBER=[YOUR ASSIGNED TWILIO WHATSAPP NUMBER]
 
 ### Additional config:
 
-- Other environmental variables can be set to control the default parameters of the agent.
+- Other environmental variables can be set to control the default parameters of the agent (see [agent.py](/gtp-chatbot/gtp_agent/agent.py) for more details) or of the app:
 
 ```bash
-export MAX_TOKENS=[NUMBER OF MAX TOKENS IN EACH REPLY] #=150
-export CONVERSATION_EXPIRES_MINS=[NUMBER OF MINUTES UNTIL A CONVERSATION IS ERASED FROM MEMORY] #=180
+export MAX_TOKENS=[NUMBER OF MAX TOKENS IN EACH REPLY]
+export CONVERSATION_EXPIRES_MINS=[N MINUTES UNTIL A CONVERSATION IS ERASED FROM MEMORY]
+export ALLOWED_PHONE_NUMBERS=[+1234567890,+1987654321] # Default is any number
 ```
 - It is also enough to have these variables in a [.env](https://github.com/laravel/laravel/blob/master/.env.example) file in the working directory where the app is running.
 
