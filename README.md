@@ -54,13 +54,14 @@ Running the app
 ### Run from the command line:
 
 ```bash
-#To start the application that works with whatsapp:
-python3 -m app whatsapp-app
+#To start the application that works with whatsapp
+# (Use --help to see all the options):
+python3 -m app.whatsapp
 ```
 
 ```bash
 #To start the HTTP application:
-python3 -m app webapp
+python3 -m app.webapp
 ```
 
 ### Run with Docker:
