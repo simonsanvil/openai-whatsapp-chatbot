@@ -5,11 +5,10 @@ import logging
 from flask import Flask, request, render_template, url_for, jsonify
 from pandas import to_datetime, to_timedelta
 
-from ..openai_agent.agent import OpenAIAgent
-from ..openai_agent.agent_utils import process_message_and_get_reply
+from openai_agent.agent import OpenAIAgent
+from openai_agent.agent_utils import process_message_and_get_reply
 
 from dotenv import find_dotenv, load_dotenv
-from ast import literal_eval
 
 logging.basicConfig()
 logger = logging.getLogger("APP")
