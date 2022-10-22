@@ -47,12 +47,12 @@ def whatsapp_reply():
     # We convert it to a regular dict
     reqvals = dict(reqvals)
     logger.info(reqvals)
-
-    allowed_phone_numbers = os.environ.get("ALLOWED_PHONE_NUMBERS",'').split(",")
     if 'From' in reqvals:
-        if (phone_number:=reqvals['From']) not in [allowed_phone_numbers]+['whatsapp:'+p for p in allowed_phone_numbers]:
-            logger.error(f"Phone number not allowed: {phone_number}")
-            return "Receiver not allowed",400
+        allowed_phone_numbers = os.environ.get("ALLOWED_PHONE_NUMBERS",'').split(",")
+        if allowed_phone_numbers:
+            if (phone_number:=reqvals['From']) not in [allowed_phone_numbers]+['whatsapp:'+p for p in allowed_phone_numbers]:
+                logger.error(f"Phone number not allowed: {phone_number}")
+                return "Receiver not allowed",400
     else:
         logger.error("No phone number given")
         return "Bad Request",400
@@ -99,9 +99,9 @@ def send_whatsapp_message(twilio_client:Client,msg:str,to_phone:str=None,**kwarg
     Sends a one-way whatsapp message via Twillio to the given phone number
     '''
     if 'allowed_phone_numbers' in kwargs:
-        allowed_phone_numbers = kwargs.get('allowed_phone_numbers')
+        allowed_phone_numbers = kwargs.get('allowed_phone_numbers').split(",")
     else:
-        allowed_phone_numbers = os.environ.get("ALLOWED_PHONE_NUMBERS")
+        allowed_phone_numbers = os.environ.get("ALLOWED_PHONE_NUMBERS", "").split(",")
     if 'from_phone' in kwargs:
         from_phone = kwargs.get('from_phone')
     else:
