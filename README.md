@@ -3,7 +3,7 @@ OpenAI Chatbot
 
 [![Build and deploy Python app to Azure Web App - openai-chatbot](https://github.com/simonsanvil/openai-whatsapp-chatbot/actions/workflows/master_openai-chatbot.yml/badge.svg)](https://github.com/simonsanvil/openai-whatsapp-chatbot/actions/workflows/master_openai-chatbot.yml)
 
-A web-based chatbot that uses OpenAI's famous transformer-based language model GPT3 (Davinci, Codex) to reply to incoming text and voice messages from WhatsApp and to generate images with OpenAI's [DALL-E](https://openai.com/dall-e-2/).
+A chatbot that uses OpenAI's famous transformer-based language model GPT3 (Davinci, Codex) to reply to incoming text and voice messages from WhatsApp and to generate images with OpenAI's [DALL-E](https://openai.com/dall-e-2/).
 
 Requires a valid key to OpenAI's API and access to their GPT-based engines (davinci, instruct, code, ...).
     
