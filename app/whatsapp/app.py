@@ -30,7 +30,7 @@ if os.path.exists(start_template):
     with open(start_template,'r') as f:
         start_template = f.read()
 agent_kwargs = dict(
-    engine=os.environ.get("GTP_ENGINE","davinci-codex"),
+    engine=os.environ.get("GPT_ENGINE","davinci-codex"),
     agent_name=os.environ.get("AGENT_NAME"),
     start_template=start_template)
 chat_managers = {} # to store chat managers for each phone number
