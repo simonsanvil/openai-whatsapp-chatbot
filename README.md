@@ -3,7 +3,7 @@ OpenAI Chatbot
 
 [![Build and deploy Python app to Azure Web App - openai-chatbot](https://github.com/simonsanvil/openai-whatsapp-chatbot/actions/workflows/master_openai-chatbot.yml/badge.svg)](https://github.com/simonsanvil/openai-whatsapp-chatbot/actions/workflows/master_openai-chatbot.yml)
 
-A web-based chatbot that uses OpenAI's famous transformer-based language model GPT3 (Davinci, Codex) to reply to incoming messages from WhatsApp or via HTTP.
+A web-based chatbot that uses OpenAI's famous transformer-based language model GPT3 (Davinci, Codex) to reply to incoming text and voice messages from WhatsApp and to generate images with OpenAI's [DALL-E](https://openai.com/dall-e-2/).
 
 Requires a valid key to OpenAI's API and access to their GPT-based engines (davinci, instruct, code, ...).
     
@@ -17,7 +17,7 @@ pip install -r requirements.txt
 Requirements
 -----------
 
--  python>=3.7
+-  python>=3.8
 - A valid [OpenAI API](https://beta.openai.com/) key
 
 Configuration
@@ -39,15 +39,17 @@ export FROM_WHATSAPP_NUMBER=[YOUR ASSIGNED TWILIO WHATSAPP NUMBER]
 
 ### Additional config:
 
-- Other environmental variables can be set to control the default parameters of the agent (see [agent.py](/gtp-chatbot/gtp_agent/agent.py) for more details) or of the app:
+- Other environmental variables can be set to control the default parameters of the agent (see [agent.py](/gtp-chatbot/gtp_agent/agent.py) for more details), control configurations of the app, or activate features of the app:
 
 ```bash
 export MAX_TOKENS=[NUMBER OF MAX TOKENS IN EACH REPLY]
 export CONVERSATION_EXPIRES_MINS=[N MINUTES UNTIL A CONVERSATION IS ERASED FROM MEMORY]
 export ALLOWED_PHONE_NUMBERS=[+1234567890,+1987654321] # Default is any number
+export START_TEMPLATE=[PATH TO A FILE WITH A TEMPLATE FOR THE START OF A CONVERSATION]
 ```
 - It is also enough to have these variables in a [.env](https://github.com/laravel/laravel/blob/master/.env.example) file in the working directory where the app is running.
 
+You an also set the `ASSEMBLYAI_API_KEY` environmental variable to use [AssemblyAI's API](https://www.assemblyai.com/) to parse and transcribe the audio of incoming voice messages so that the agent can reply to them.
 
 Running the app
 ---------
@@ -66,15 +68,15 @@ python3 -m app.webapp
 
 ### Run with Docker:
 
-Alternatively the docker container will automatically install all the requirements and run the HTTP application.
+Alternatively the docker container will automatically install all the requirements and run the whatsapp application.
 
 ```bash
 # building the image
-docker build -t openai_chatbot .
+docker build -t openai-ws-chatbot .
 
 #running the container
 #It is expected that you have all the required environmental variables in a .env file
-docker run -p 8000:8000 openai_chatbot --env_file=.env
+docker run -p 5000:5000 openai-ws-chatbot --env_file=.env
 ```
 
 Usage
@@ -143,7 +145,7 @@ JSON response:
 
 After following the instructions in the Twilio for Whatsapp Sandbox Tutorial you should be able to join your sandbox and start chatting with the agent inmediately
 
-<img src="https://i.imgur.com/1tD5o9h.jpeg" width="450"/>
+<img src="https://i.imgur.com/EdYxOWe.jpg" width="450"/>
 
 
 
