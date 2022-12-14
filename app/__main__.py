@@ -16,7 +16,6 @@ import sys
 
 logger = logging.getLogger(__name__)
 
-
 def main(app_name):
     module_name = get_module_name(app_name)
     if module_name is None:
