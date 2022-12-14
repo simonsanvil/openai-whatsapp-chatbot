@@ -1,5 +1,5 @@
 cd # external requirements
-certifi==2019.9.11
+certifi==2022.12.7
 chardet==3.0.4
 typer>=0.6.1
 Flask>=2.1.0
