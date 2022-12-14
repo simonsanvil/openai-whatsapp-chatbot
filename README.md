@@ -1,11 +1,11 @@
-GTP3 Chatbot
+OpenAI Chatbot
 ==============================
 
-[![Build and deploy Python app to Azure Web App - openai-chatbot](https://github.com/simonsanvil/GTP3-Whatsapp-chatbot/actions/workflows/master_openai-chatbot.yml/badge.svg)](https://github.com/simonsanvil/openai-whatsapp-chatbot/actions/workflows/master_openai-chatbot.yml)
+[![Build and deploy Python app to Azure Web App - openai-chatbot](https://github.com/simonsanvil/openai-whatsapp-chatbot/actions/workflows/master_openai-chatbot.yml/badge.svg)](https://github.com/simonsanvil/openai-whatsapp-chatbot/actions/workflows/master_openai-chatbot.yml)
 
-A web-based chatbot that uses OpenAI's famous transformer-based language model GTP3 (Davinci, Codex) to reply to incoming messages from WhatsApp or via HTTP.
+A web-based chatbot that uses OpenAI's famous transformer-based language model GPT3 (Davinci, Codex) to reply to incoming messages from WhatsApp or via HTTP.
 
-Requires a valid key to OpenAI's API and access to their GTP-based engines (davinci, codex, ada, babbage, etc).
+Requires a valid key to OpenAI's API and access to their GPT-based engines (davinci, instruct, code, ...).
     
 Installation
 ------
@@ -79,28 +79,6 @@ docker run -p 8000:8000 openai_chatbot --env_file=.env
 
 Usage
 -------
-### Chat Agent
-
-The `gtp_agent` package provides a wrapper for the OpenAI API that allows to conveniently interact with GTP-3 as a chat agent.
-
-```python
-import os
-from gtp_agent import GTPAgent
-
-os.environ["OPENAI_API_KEY"] = "YOUR OPENAI API KEY"
-# Get the available engines
-GTPAgent.get_available_engines() # [Out] ['code-davinci-002', 'text-davinci-001', 'text-davinci-002', 'text-davinci-insert-002', ...]
-
-# Initialize the agent and start a conversation
-agent = GTPAgent(engine="text-davinci", temperature=0.5, max_tokens=100)
-agent.start_conversation(chatter_name="Chatter") 
-# "Chatter" is the name of the person you are chatting with
-# Send a message to the agent
-agent.send_message("Hello")
-# Get the agent's reply
-agent.get_reply() # [Out] "Hello, how are you?"
-```
-
 ### HTTP Application
 
 
