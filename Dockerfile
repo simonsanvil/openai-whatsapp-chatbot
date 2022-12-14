@@ -4,9 +4,14 @@ WORKDIR /usr/src/app
 RUN apt-get update 
 RUN python3 --version && pip3 --version
 
-ADD /app .
+ADD openai-chatbot/ ./openai-chatbot
 COPY ./requirements.txt .en[v] ./
 RUN pip3 install -r requirements.txt
+ADD /app ./app
 
 EXPOSE 8000
-ENTRYPOINT python3 -m app webapp
+WORKDIR /usr/src/app
+ENTRYPOINT python3 -m app whatsapp
+
+# docker run -it --rm -v $(pwd)/data:/usr/src/app/data -p 5000:5000 --env-file .env --name whatsapp-chatbot whatsapp-chatbot
+#  

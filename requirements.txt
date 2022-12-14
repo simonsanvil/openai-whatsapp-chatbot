@@ -1,18 +1,15 @@
-# external requirements
+cd # external requirements
 certifi==2019.9.11
 chardet==3.0.4
-Click==7.0
-Flask==1.1.1
+typer>=0.6.1
+Flask>=2.1.0
 idna==2.8
-itsdangerous==1.1.0
 jinja2>=2.11.3
-MarkupSafe==1.1.1
 pyjwt>=2.4.0
 pytz==2019.3
 six==1.13.0
-twilio==6.33.1
+twilio>=6.33.1
 urllib3>=1.26.5
-Werkzeug==0.16.0
 python-dotenv>=0.5.1
 openai
 chronological
@@ -21,3 +18,4 @@ ipython
 ipykernel
 pandas
 apscheduler
+-e openai-chatbot/

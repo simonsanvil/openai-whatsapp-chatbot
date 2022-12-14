@@ -39,11 +39,12 @@ export FROM_WHATSAPP_NUMBER=[YOUR ASSIGNED TWILIO WHATSAPP NUMBER]
 
 ### Additional config:
 
-- Other environmental variables can be set to control the default parameters of the agent.
+- Other environmental variables can be set to control the default parameters of the agent (see [agent.py](/gtp-chatbot/gtp_agent/agent.py) for more details) or of the app:
 
 ```bash
-export MAX_TOKENS=[NUMBER OF MAX TOKENS IN EACH REPLY] #=150
-export CONVERSATION_EXPIRES_MINS=[NUMBER OF MINUTES UNTIL A CONVERSATION IS ERASED FROM MEMORY] #=180
+export MAX_TOKENS=[NUMBER OF MAX TOKENS IN EACH REPLY]
+export CONVERSATION_EXPIRES_MINS=[N MINUTES UNTIL A CONVERSATION IS ERASED FROM MEMORY]
+export ALLOWED_PHONE_NUMBERS=[+1234567890,+1987654321] # Default is any number
 ```
 - It is also enough to have these variables in a [.env](https://github.com/laravel/laravel/blob/master/.env.example) file in the working directory where the app is running.
 
@@ -53,13 +54,14 @@ Running the app
 ### Run from the command line:
 
 ```bash
-#To start the application that works with whatsapp:
-python3 -m app whatsapp-app
+#To start the application that works with whatsapp
+# (Use --help to see all the options):
+python3 -m app.whatsapp
 ```
 
 ```bash
 #To start the HTTP application:
-python3 -m app webapp
+python3 -m app.webapp
 ```
 
 ### Run with Docker:
@@ -77,6 +79,28 @@ docker run -p 8000:8000 openai_chatbot --env_file=.env
 
 Usage
 -------
+### Chat Agent
+
+The `gtp_agent` package provides a wrapper for the OpenAI API that allows to conveniently interact with GTP-3 as a chat agent.
+
+```python
+import os
+from gtp_agent import GTPAgent
+
+os.environ["OPENAI_API_KEY"] = "YOUR OPENAI API KEY"
+# Get the available engines
+GTPAgent.get_available_engines() # [Out] ['code-davinci-002', 'text-davinci-001', 'text-davinci-002', 'text-davinci-insert-002', ...]
+
+# Initialize the agent and start a conversation
+agent = GTPAgent(engine="text-davinci", temperature=0.5, max_tokens=100)
+agent.start_conversation(chatter_name="Chatter") 
+# "Chatter" is the name of the person you are chatting with
+# Send a message to the agent
+agent.send_message("Hello")
+# Get the agent's reply
+agent.get_reply() # [Out] "Hello, how are you?"
+```
+
 ### HTTP Application
 
 
