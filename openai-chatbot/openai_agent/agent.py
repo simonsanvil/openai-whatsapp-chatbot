@@ -284,8 +284,9 @@ class OpenAIAgent:
         """
         params = self.completion_params.copy()
         params["max_tokens"] = params.get("max_tokens", 150)
+        params["stop"] = stop
         params.update(kwargs)
-        completion = openai.Completion.create(prompt=prompt, **params, stop=stop)
+        completion = openai.Completion.create(prompt=prompt, **params)
         return completion
 
     def get_single_reply(self, msg, max_response_length=None, chatter_name: str = None):
