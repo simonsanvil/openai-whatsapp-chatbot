@@ -8,9 +8,9 @@ A chatbot that uses OpenAI's API to reply to incoming text and voice messages fr
 Requires a valid key to [OpenAI's API](https://openai.com/api/).
 
 <p float="left">
-    <img src="https://i.imgur.com/59v9gFH.png" width="300" height="580"/>
-    <img src="https://i.imgur.com/xCJrOZz.png" width="300" height="580"/>
-    <img src="https://i.imgur.com/dfluSaY.png" width="300" height="580"/>
+    <img src="https://i.imgur.com/59v9gFH.png" width="250" height="550"/>
+    <img src="https://i.imgur.com/xCJrOZz.png" width="250" height="550"/>
+    <img src="https://i.imgur.com/dfluSaY.png" width="250" height="550"/>
 </p>
     
 Installation
