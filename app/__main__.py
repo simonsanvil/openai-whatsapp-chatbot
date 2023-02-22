@@ -39,8 +39,8 @@ def main(app_name):
 
 
 def get_module_name(app_name):
-    if app_name in ["webapp", "api", "webchat", "apichat", "web-app", "web_app"]:
-        return "app.webapp"
+    # if app_name in ["webapp", "api", "webchat", "apichat", "web-app", "web_app"]:
+    #     return "app.webapp"
 
     if app_name in [
         "whatsapp-app",
