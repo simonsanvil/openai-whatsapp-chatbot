@@ -89,8 +89,8 @@ def ensure_engine_change(msg, chat_agent, available_engines):
         candidate_engine = match.group("word_after")
         if candidate_engine.lower() in available_engines:
             chat_agent.set_agent_params(engine=candidate_engine.lower())
-            if chat_agent.agent_name.lower() in available_engines:
-                chat_agent.agent_name = candidate_engine.upper()
+            if chat_agent.name.lower() in available_engines:
+                chat_agent.name = candidate_engine.upper()
             chat_agent.start_conversation()
             return candidate_engine
     return False
@@ -117,8 +117,8 @@ def ensure_param_change(msg, chat_agent, available_engines):
             parameter = "max_tokens"
         chat_agent.set_agent_params(**{parameter: value})
         if parameter == "engine":
-            if chat_agent.agent_name.lower() in available_engines:
-                chat_agent.agent_name = value.upper()
+            if chat_agent.name.lower() in available_engines:
+                chat_agent.name = value.upper()
         logger.debug(f"parameter {parameter} with value {value} was set correctly")
         return True
     return False
