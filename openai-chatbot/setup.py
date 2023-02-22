@@ -7,4 +7,9 @@ setup(
     description="A Whatsapp bot to talk with OpenAI's GTP-3 language model using their private API.",
     author="Simon E. Sanchez Viloria (simonsanvil)",
     license="MIT",
+    install_requires=[
+        "openai",
+        "python-dotenv",
+        "requests",
+    ]
 )

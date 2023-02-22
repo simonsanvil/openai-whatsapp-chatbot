@@ -20,7 +20,7 @@ class OpenAIAgent:
     Parameters:
     -------
     
-    chatter_name:str = "Human"
+    user_name:str = "Human"
         Name to adress the person at your end of the conversation.
 
     agent_name:str = None
@@ -66,24 +66,19 @@ class OpenAIAgent:
     ```
     """
 
-    START_TEMPLATE = (""
-#     """
-# The following is a conversation with an AI. The AI is helpful, apolitical, clever, and very friendly. 
-# Besides chatting with a person, the AI is also capable of generating images. When the person states its desire for the AI to generate an image, 
-# the AI will respond with the message "[reply] [image generation: "[prompt]"]" where "[reply]" is a standard reply about the task and "[prompt]" is the prompt/title for the image generation task.
-# For example, if the person types "I want to see a picture of a cat", the AI could respond with "Sure, Coming right up! [image generation: "a cat"]". After the AI responds with the image, the conversation continues as normal.
-# Another example is if the person types "Can  you show me an image of a dog wearing a hat?", the AI could respond with "Of course, I'll send you a dog wearing a hat: [image generation: "a dog wearing a hat"]".
-# One thing to keep in mind is that the images take a few seconds to generate, so the AI will not respond with the image immediately. The AI should not reply as if it has already sent the image.
-# The AI's name is {AGENT_NAME} and is talking with {CHATTER}.
-#     """.strip()
+    START_TEMPLATE = (
+    """
+The following is a conversation with an AI. The AI is helpful, apolitical, clever, and very friendly. 
+The AI's name is {AGENT_NAME} and is talking with {USERNAME}.
+    """.strip()
     )
 
-    # MSG_TEMPLATE = """{chatter_name}:{MSG}\n{AGENT_NAME}:"""
-    MSG_TEMPLATE = """{chatter_name}:{MSG}\n{AGENT_NAME}:"""
+    # MSG_TEMPLATE = """{user_name}:{MSG}\n{AGENT_NAME}:"""
+    MSG_TEMPLATE = """{user_name}:{MSG}\n{AGENT_NAME}:"""
 
     def __init__(
         self,
-        agent_name: str = None,  # "GTP",
+        name: str = None,  # "GTP",
         engine: str = "text-davinci-003",
         start_template: str = None,
         msg_template: str = None,
@@ -112,11 +107,11 @@ class OpenAIAgent:
                     "OpenAI API key is not set in the environmental variables."
                 )
         elif "OPENAI_API_KEY" not in os.environ:
-            os.environ["OPEN_API_KEY"] = api_key
+            os.environ["OPENAI_API_KEY"] = api_key
 
         openai.api_key = api_key
-        self.agent_name_ = agent_name if agent_name else engine.upper()
-        self.chatter_name = None
+        self._agent_name = name if name else engine.upper()
+        self.username = None
         self.START_TEMPLATE = start_template if start_template else self.START_TEMPLATE + "\n"
         self.MSG_TEMPLATE = msg_template if msg_template else self.MSG_TEMPLATE
         if engine not in (available_engines := self.get_available_engines()):
@@ -135,6 +130,8 @@ class OpenAIAgent:
         self.__dict__["_conversation__"] = None
         self.__dict__["conversation_start_time"] = datetime.utcnow().isoformat()
         self.__dict__["is_conversation_active"] = False
+        self.__dict__['__messages__'] = []
+        self.__dict__['__replies__'] = []
 
     @property
     def conversation(self):
@@ -145,12 +142,20 @@ class OpenAIAgent:
         return self.completion_params["engine"]
 
     @property
-    def agent_name(self):
+    def name(self):
         return (
-            self.agent_name_
-            if self.agent_name_ not in self.get_available_engines()
+            self._agent_name
+            if self._agent_name not in self.get_available_engines()
             else self.engine.upper()
         )
+
+    @property
+    def messages(self):
+        return self.__messages__
+
+    @property
+    def replies(self):
+        return self.__replies__
 
     @classmethod
     def get_available_engines(cls):
@@ -175,7 +180,7 @@ class OpenAIAgent:
 
     def __len__(self):
         """Get the number of messages in the conversation"""
-        messages = re.findall(rf"{self.chatter_name}:", self.conversation)
+        messages = re.findall(rf"{self.username}:", self.conversation)
         return len(messages)
 
     def __setattr__(self, name, value):
@@ -187,17 +192,11 @@ class OpenAIAgent:
             raise AttributeError("This attribute is inmutable.")
         self.__dict__[name] = value
 
-    def set_msg_from(self, name):
-        """
-        Set the name of the user chatting with the agent
-        """
-        chatter_name = name
-
     def set_agent_name(self, name):
         """
         Set the name of the agent chatting with the user
         """
-        self.agent_name = name
+        self.name = name
 
     def set_agent_param(
         self,
@@ -230,17 +229,17 @@ class OpenAIAgent:
         agent.set_gtp3_params(**params)
         return agent
 
-    def start_conversation(self, chatter_name: str = None):
+    def start_conversation(self, user_name: str = None):
         """
         Starts a new conversation history erasing the previous one if there is
         """
         self.__dict__["_conversation__"] = self.START_TEMPLATE.format(
-            AGENT_NAME=self.agent_name,
-            CHATTER=f"a person named {chatter_name}" if chatter_name else "a human",
+            AGENT_NAME=self.name,
+            USERNAME=f"a person named {user_name}" if user_name else "a human",
         )
         self.__dict__["conversation_start_time"] = datetime.utcnow().isoformat()
         self.__dict__["is_conversation_active"] = True
-        self.chatter_name = chatter_name or "HUMAN"
+        self.username = user_name or "HUMAN"
 
     def set_conversation(self, conversation: str):
         """
@@ -252,18 +251,18 @@ class OpenAIAgent:
         """Appends the given string to the conversation history"""
         self.__dict__["_conversation__"] = self.conversation.append(string)
 
-    def make_chat_prompt(self, msg, chatter=None, continue_conversation=True):
+    def make_chat_prompt(self, msg, username=None, continue_conversation=True):
         """
         Generate a chat prompt from the message given based on the chat template.
         
         If continue_conversation is True and the conversation history is empty it will inject at the start 
         the starting template, else it will just use the chat message template.
         """
-        chatter = chatter or self.chatter_name
+        username = username or self.username
         if not self.is_conversation_active or not continue_conversation:
             self.start_conversation()
         prompt = self.MSG_TEMPLATE.format(
-            chatter_name=chatter, AGENT_NAME=self.agent_name, MSG=msg.strip()
+            user_name=username, AGENT_NAME=self.name, MSG=msg.strip()
         )
         return prompt
 
@@ -288,7 +287,7 @@ class OpenAIAgent:
         completion = openai.Completion.create(prompt=prompt, **params, stop=stop)
         return completion
 
-    def get_single_reply(self, msg, max_response_length=None, chatter_name: str = None):
+    def get_single_reply(self, msg, max_response_length=None, user_name: str = None):
         """
         Get reply without considering conversation history.
 
@@ -300,12 +299,12 @@ class OpenAIAgent:
         max_response_length : int
             Max number of tokens that a reply will generate.
         """
-        chatter_name = chatter_name or self.chatter_name
+        user_name = user_name or self.username
         new_prompt = self.make_chat_prompt(msg, continue_conversation=False)
         completion = self.get_completion(
             new_prompt,
             max_tokens=max_response_length or self.completion_params.get("max_tokens"),
-            stop=[chatter_name + ":", self.agent_name + ":"],
+            stop=[user_name + ":", self.name + ":"],
         )
         reply_txt = completion.choices[0].text
         return reply_txt
@@ -321,16 +320,17 @@ class OpenAIAgent:
             Text message to get a reply to and subsequently add to the conversation.
         max_response_length : int
             Max number of tokens that a reply will generate.
-        person : str
-            Name of the person chatting with the agent. If None the chatter name will be used.
         """
         if msg:
             prompt = self.make_chat_prompt(msg)
-        chatter_name = self.chatter_name
+        else:
+            prompt = self.conversation
+            msg = ""
+        user_name = self.username or "HUMAN"
         completion = self.get_completion(
             self.conversation + prompt,
             max_tokens=max_response_length or self.completion_params.get("max_tokens"),
-            stop=[chatter_name + ":", self.agent_name + ":"],#, "\n"],
+            stop=[user_name + ":", self.name + ":"],#, "\n"],
         )
         reply_txt = re.sub("(\\n)*$", "", completion.choices[0].text.strip())
         self.update_conversation(msg, reply_txt)
@@ -359,25 +359,9 @@ class OpenAIAgent:
         self.__dict__["_conversation__"] = (
             self.conversation + self.make_chat_prompt(msg) + reply.strip() + "\n"
         )
-
-    def prompt_agent(
-        self, prompt: str, agent: str, max_response_length: int = None, **parameters
-    ):
-        params = self.completion_params.copy()
-        if agent not in self.get_available_engines():
-            raise AttributeError(f'"{agent}" is not an available engine.')
-        for param in parameters:
-            params[param] = parameters[param]
-        params["engine"] = agent
-        params["max_tokens"] = max_response_length or params.get("max_tokens", 150)
-        completion = openai.Completion.create(prompt=prompt.strip(), **params)
-        return re.sub("(\\n)*$", "", completion.choices[0].text.strip()).strip()
-
-    def prompt_codex(self, prompt, max_repsonse_length=150, **params):
-        return self.prompt_agent(prompt, "davinci-codex", max_repsonse_length, **params)
-
-    def prompt_davinci(self, prompt, max_repsonse_length=150, **params):
-        return self.prompt_agent(prompt, "davinci", max_repsonse_length, **params)
+        self.__messages__.append(msg)
+        if reply:
+            self.__replies__.append(reply)
 
     def generate_image(self, prompt: str):
         """
