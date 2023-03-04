@@ -6,16 +6,19 @@ import os
 import re
 import threading
 
-from openai_agent import OpenAIAgent
+# from openai_agent import OpenAIAgent
+import openai
 
-from .chat import Sender, ChatManager
+from .chat import Sender, OpenAIChatManager
 
 logger = logging.getLogger("WP-APP")
 
 
 def verify_phone_number(phone_number: str) -> dict:
     """Make sure that the phone number is allowed to use the chatbot."""
-    contacts_json = os.environ.get("CONTACTS_JSON", "contacts.json")
+    contacts_json = os.environ.get("CONTACTS_JSON")
+    if not contacts_json:
+        return True
     allowed_contacts = json.load(open(contacts_json, "r"))
     allowed_phone_numbers = [p["phone_number"] for p in allowed_contacts]
     if phone_number not in [allowed_phone_numbers] + [
@@ -31,17 +34,18 @@ def verify_phone_number(phone_number: str) -> dict:
     return contact
 
 
-def ensure_image_generation(reply: str, chat: ChatManager, sender: Sender, twilio_client: object) -> str:
+def ensure_image_generation(reply: str, chat: OpenAIChatManager, sender: Sender, twilio_client: object) -> str:
     """
     Checks if the reply contains an image generation prompt and generate the image in a separate thread if so.
     Returns the reply without the image generation prompt if the image is generated successfully, otherwise returns the reply as is.
     """
-    if "[image generation" not in reply.lower():
+    if "[img:" not in reply.lower():
         return reply
     # check if the sender has reached the maximum number of images generated
     if chat.num_images_generated > sender.max_image_generations:
-        chat.agent.add_to_conversation(
-            f"- This user can't generate images anymore due to limits reached. Image not sent - \n"
+        chat.add_message(
+            f"- This user can't generate images anymore due to limits reached. Image not sent - \n",
+            role='system'
         )
         logger.warning(
             f"Image not sent: User {sender.name} ({sender.phone_number}) has reached the maximum number of images generated"
@@ -49,9 +53,9 @@ def ensure_image_generation(reply: str, chat: ChatManager, sender: Sender, twili
         return "Sorry, you have reached the maximum number of images you can generate. Try again later."
     # get the prompt and real reply from the message '{reply}[image generation: "{prompt}"]'
     img_generation_prompt = re.search(
-        r"\[image generation: \"(.*)\"\]", reply, flags=re.IGNORECASE
+        r"\[img:\"(.*)\"\]", reply, flags=re.IGNORECASE
     ).group(1)
-    reply = re.sub(r"\[image generation: \"(.*)\"\]", "", reply, flags=re.IGNORECASE)
+    reply = re.sub(r"\[img:\"(.*)\"\]", "", reply, flags=re.IGNORECASE)
     logger.info(f"Image generation prompt: '{img_generation_prompt}'")
     # send the image in a separate thread
     send_image_with_threading(img_generation_prompt, chat, sender, twilio_client)
@@ -62,8 +66,9 @@ def ensure_image_generation(reply: str, chat: ChatManager, sender: Sender, twili
         logger.warning(
             f"User {sender.name} ({sender.phone_number}) has reached the maximum number of images generated"
         )
-        chat.agent.add_to_conversation(
-            f"- limit of image generations reached. This user can't do any more generations.  -\n"
+        chat.add_message(
+            f"- limit of image generations reached. This user can't do any more generations.  -\n",
+            role='system'
         )
 
     return reply
@@ -85,7 +90,7 @@ def ensure_captioning(msg, chat):
 
 
 def send_image_with_threading(
-    prompt: str, chat: ChatManager, sender: Sender, twilio_client
+    prompt: str, chat: OpenAIChatManager, sender: Sender, twilio_client
 ):
     """Generate an image with the agent and send it in a separate thread given the prompt"""
     from_number = os.environ.get("FROM_WHATSAPP_NUMBER")
@@ -93,7 +98,7 @@ def send_image_with_threading(
     send_current_image = partial(
         send_image,
         prompt,
-        chat.agent,
+        chat,
         twilio_client,
         from_phone=from_number,
         to_phone=sender.phone_number,
@@ -105,7 +110,7 @@ def send_image_with_threading(
 
 def send_image(
     prompt: str,
-    chat_agent: OpenAIAgent,
+    chat: OpenAIChatManager,
     twilio_client: object,
     from_phone: str,
     to_phone: str,
@@ -113,7 +118,7 @@ def send_image(
 ):
     """Send a generated image to the given phone number via WhatsApp"""
     logger.info(f"Generating image for prompt: {prompt}")
-    img_url = chat_agent.generate_image(prompt)
+    img_url = generate_image(prompt)
     logger.info(f"Image generated: {img_url}")
     logger.info(f'"whatsapp:{to_phone}" ' + f'"whatsapp:{from_phone}" ' + img_url)
     message = twilio_client.messages.create(
@@ -136,3 +141,24 @@ def save_to_contactbook(reqvals):
             "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
         json.dump(contactbook, open(contactbook_path, "w"))
+
+def generate_image(prompt: str):
+    """
+    Generates a new image using the prompt given
+    with the image generation API (OpenAI's DALL-E)
+    and returns the response.
+    """
+    # from clients.openai import OpenAIClient
+
+    logging.debug(
+        f"Querying OpenAI's Image API 'DALL-E' with prompt '{prompt}'"
+    )
+    # openai_cl = OpenAIClient()
+    response = openai.Image.create(
+        prompt=prompt,
+        n=1,
+        size="1024x1024"
+    )
+    img = response["data"][0]
+    img_url = img["url"]
+    return img_url
