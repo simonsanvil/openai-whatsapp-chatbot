@@ -15,12 +15,9 @@ class Media:
     is_video: bool = field(init=False)
 
     def __post_init__(self):
-        if self.content_type.startswith('image'):
-            self.__dict__['is_image'] = True
-        elif self.content_type.startswith('video'):
-            self.__dict__['is_video'] = True
-        elif self.content_type.startswith('audio'):
-            self.__dict__['is_audio'] = True
+        self.__dict__['is_image'] = self.content_type.lower().startswith('image')
+        self.__dict__['is_video'] = self.content_type.lower().startswith('video')
+        self.__dict__['is_audio'] = self.content_type.lower().startswith('audio')
 
 @dataclass
 class TwilioWhatsAppMessage:
@@ -171,6 +168,7 @@ class TwilioWhatsAppClient(ChatClient):
             to=request_values.get("To"),
             media=msg_media
         )
+        # print(request_values, msg_media, message, sep="\n")
         return message
 
     def receive_message(self, **kwargs):
