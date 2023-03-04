@@ -35,32 +35,6 @@ from_number=os.environ.get("TWILLIO_WHATSAPP_NUMBER","+14155238886")
 # instance the app
 app = Flask(__name__)
 
-
-
-def verify_and_process_media(message, chat:OpenAIChatManager) -> str:
-    """Processes media messages"""
-    if message.media is not None: # if the message contains media
-        if message.media.is_audio and chat.voice_transcription:
-            # if is audio, transcribe it
-            msg = whisper_transcription(message.media.url, url=True, language=chat.transcription_language)
-        # elif message.media.is_image and chat.allow_images:
-        #     # if is an image, caption it
-        #     img_caption = image_captioning(message.media.url, chat, url=True)
-        #     msg = f"[image of \"{img_caption}\"]"
-        else: # otherwise, just use the message body
-            msg = message.body
-    else:
-        # otherwise, just use the message body
-        msg = message.body
-    return msg
-
-def check_conversation_end(message:str, chat:OpenAIChatManager) -> bool:
-    """Checks if the conversation should end"""
-    if message.lower().strip() in chat.end_conversation_phrases:
-        chat.restart_conversation()
-        return True
-    return False
-
 @app.route("/whatsapp/reply",methods=['POST'])
 async def reply_to_whatsapp_message():
     logger.info(f"Obtained request: {dict(request.values)}")
@@ -123,8 +97,32 @@ async def reply_to_whatsapp_message():
 
 @app.route("/whatsapp/status",methods=['POST'])
 def process_whatsapp_status():
-    s(f"Obtained request: {dict(request.values)}")
+    logger.info(f"Obtained request: {dict(request.values)}")
     return jsonify({'status':'ok'})
+
+def verify_and_process_media(message, chat:OpenAIChatManager) -> str:
+    """Processes media messages"""
+    if message.media is not None: # if the message contains media
+        if message.media.is_audio and chat.voice_transcription:
+            # if is audio, transcribe it
+            msg = whisper_transcription(message.media.url, url=True, language=chat.transcription_language)
+        # elif message.media.is_image and chat.allow_images:
+        #     # if is an image, caption it
+        #     img_caption = image_captioning(message.media.url, chat, url=True)
+        #     msg = f"[image of \"{img_caption}\"]"
+        else: # otherwise, just use the message body
+            msg = message.body
+    else:
+        # otherwise, just use the message body
+        msg = message.body
+    return msg
+
+def check_conversation_end(message:str, chat:OpenAIChatManager) -> bool:
+    """Checks if the conversation should end"""
+    if message.lower().strip() in chat.end_conversation_phrases:
+        chat.restart_conversation()
+        return True
+    return False
 
 if __name__ == '__main__':
     import argparse
