@@ -7,8 +7,8 @@ RUN python3 --version && pip3 --version
 # ADD openai-chatbot/ ./openai-chatbot
 COPY ./requirements.txt .en[v] ./
 RUN pip3 install -r requirements.txt
-ADD /app ./app
 ADD /chat ./chat
+ADD /app ./app
 
 EXPOSE 8000
 WORKDIR /usr/src/app
