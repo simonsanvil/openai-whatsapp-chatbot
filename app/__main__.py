@@ -75,9 +75,8 @@ if __name__ == "__main__":
     dotenv.load_dotenv()
     if len(args) == 1:
         # Defaults to webapp
-        logging.info("Starting server for web app")
-        from app.webapp.__main__ import main
-
+        logging.info("Starting server for app")
+        from app.whatsapp.__main__ import main
         typer.run(main)
     else:
         app_name = args[1]
