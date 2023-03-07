@@ -51,8 +51,8 @@ model_options = dict(
 
 # create the chat client
 chat_client = TwilioWhatsAppClient(
-    account_sid=os.environ.get("TWILIO_ACCOUNT_SID"),
-    auth_token=os.environ.get("TWILIO_AUTH_TOKEN"),
+    account_sid=os.environ.get("TWILLIO_ACCOUNT_SID"),
+    auth_token=os.environ.get("TWILLIO_AUTH_TOKEN"),
     from_number=os.environ.get("TWILLIO_WHATSAPP_NUMBER", "+14155238886"),
 )
 
