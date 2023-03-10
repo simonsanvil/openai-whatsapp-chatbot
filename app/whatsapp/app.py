@@ -28,7 +28,7 @@ logger.setLevel(logging.DEBUG)
 # chat agent configuration
 start_template_env = os.environ.get("CHAT_START_TEMPLATE_TEXT")
 start_template_file = os.environ.get("CHAT_START_TEMPLATE_FILE")
-
+start_template = ""
 if start_template_env is None:
     if os.path.exists(start_template_file):
         with open(start_template_env, "r") as f:
@@ -39,7 +39,7 @@ else:
     logger.warning("CHAT_START_TEMPLATE environment variable was set.")
     start_template = start_template_env
 
-logger.warning("CHAT_START_TEMPLATE is set to: " + start_template)
+logger.info("CHAT_START_TEMPLATE is set to: " + start_template)
     
 chat_options = dict(
     model=os.environ.get("CHAT_MODEL", "gpt-3.5-turbo"),
