@@ -34,9 +34,9 @@ if start_template_env is None:
         with open(start_template_env, "r") as f:
             start_template = f.read()
     else:
-        logger.warning(f"Could not find start template file at {start_template_env}")
+        logger.info(f"Could not find start template file at {start_template_env}")
 else:
-    logger.warning("CHAT_START_TEMPLATE environment variable was set.")
+    logger.info("CHAT_START_TEMPLATE environment variable was set.")
     start_template = start_template_env
 
 logger.info("CHAT_START_TEMPLATE is set to: " + start_template)
