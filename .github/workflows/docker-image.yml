@@ -19,4 +19,4 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Push the Docker image to Docker Hub
-        run: docker push openai-ws-chatbot
+        run: docker push eladrave/openai-ws-chatbot
