@@ -7,6 +7,12 @@ from typing import List
 import openai
 from chat.clients import ChatClient
 
+import os
+import promptlayer
+promptlayer.api_key = os.environ.get("PROMPTLAYER_API_KEY")
+
+openai = promptlayer.openai
+
 __all__ = [
     "text_completion",
     "chat_completion",
@@ -54,6 +60,7 @@ def text_completion(
 def chat_completion(
     messages: List[dict],
     model: str = "gpt-3.5-turbo",
+    pl_tags: List[str] = ["Whatsapp", "Chatbot"],
     **kwargs
 ):
     """
@@ -77,6 +84,7 @@ def chat_completion(
     response = openai.ChatCompletion.create(
         model=model,
         messages=messages,
+        pl_tags=["pipeline3", "world"],
         **kwargs
     )
 
