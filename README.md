@@ -60,7 +60,8 @@ The image below shows which boxes you need to fill in when configuring your Twil
 export MAX_TOKENS=[NUMBER OF MAX TOKENS IN EACH REPLY]
 export CONVERSATION_EXPIRES_MINS=[N MINUTES UNTIL A CONVERSATION IS ERASED FROM MEMORY]
 export ALLOWED_PHONE_NUMBERS=[+1234567890,+1987654321] # Default is any number
-export START_TEMPLATE=[PATH TO A FILE WITH A TEMPLATE FOR THE START OF A CONVERSATION] #data/start_template.txt
+export START_TEMPLATE_FILE=[PATH TO A FILE WITH A TEMPLATE FOR THE START OF A CONVERSATION] #data/start_template.txt
+export START_TEMPLATE_TEXT="You can put the initial template text here"
 export ASSEMBLYAI_API_KEY=[YOUR ASSEMBLY-AI API KEY]
 ```
 - It is also enough to have these variables in a [.env](https://github.com/laravel/laravel/blob/master/.env.example) file in the working directory where the app is running.
