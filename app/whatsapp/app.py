@@ -7,6 +7,7 @@ from chat.handlers.openai import (
     chat_completion as chatgpt_completion,
     # text_completion as chatgpt_completion,
     voice_transcription as whisper_transcription,
+    conversation_summary as conversation_summary
 )
 from app.handlers import (
     check_and_send_image_generation,
@@ -26,11 +27,21 @@ logger = logging.getLogger("WP-APP")
 logger.setLevel(logging.DEBUG)
 
 # chat agent configuration
-start_template = os.environ.get("CHAT_START_TEMPLATE")
-if os.path.exists(start_template):
-    with open(start_template, "r") as f:
-        start_template = f.read()
+start_template_env = os.environ.get("CHAT_START_TEMPLATE_TEXT")
+start_template_file = os.environ.get("CHAT_START_TEMPLATE_FILE")
+start_template = ""
+if start_template_env is None:
+    if os.path.exists(start_template_file):
+        with open(start_template_env, "r") as f:
+            start_template = f.read()
+    else:
+        logger.info(f"Could not find start template file at {start_template_env}")
+else:
+    logger.info("CHAT_START_TEMPLATE environment variable was set.")
+    start_template = start_template_env
 
+logger.info("CHAT_START_TEMPLATE is set to: " + start_template)
+    
 chat_options = dict(
     model=os.environ.get("CHAT_MODEL", "gpt-3.5-turbo"),
     agent_name=os.environ.get("AGENT_NAME"),
@@ -53,7 +64,7 @@ model_options = dict(
 chat_client = TwilioWhatsAppClient(
     account_sid=os.environ.get("TWILIO_ACCOUNT_SID"),
     auth_token=os.environ.get("TWILIO_AUTH_TOKEN"),
-    from_number=os.environ.get("TWILLIO_WHATSAPP_NUMBER", "+14155238886"),
+    from_number=os.environ.get("TWILIO_WHATSAPP_NUMBER", "+14155238886"),
 )
 
 # instance the app
@@ -78,6 +89,7 @@ async def reply_to_whatsapp_message():
     msg = verify_and_process_media(new_message, chat)
     # check if the conversation should end
     if message_empty_or_goodbye(msg, chat):
+        conversation_summary(chat)
         return jsonify({"status": "ok"})
     # if this is the first message, ensure the language is set
     logger.info("Chat has %d messages", len(chat.messages))

@@ -4,6 +4,13 @@ import logging
 from typing import Union, Callable
 # from apscheduler.schedulers.background import BackgroundScheduler
 
+from chat.handlers.openai import (
+    chat_completion as chatgpt_completion,
+    # text_completion as chatgpt_completion,
+    voice_transcription as whisper_transcription,
+    conversation_summary as conversation_summary
+)
+
 managers = {}
 
 
@@ -57,6 +64,7 @@ class OpenAIChatManager:
 
     def save(self):
         managers[self.sender.phone_number] = self
+
 
     def get_messages_from(self, role: str):
         return [msg for msg in self.messages if msg["role"] == role]
@@ -113,6 +121,14 @@ class OpenAIChatManager:
 
     def __delitem__(self, index):
         del self.messages[index]
+
+    def __del__(self):
+        # Save the current session as a summary. This will call the save method
+        # which will save the current session in a file with the sender as a name
+        conversation_summary(chat=self)
+       
+
+
 
 
 @dataclass

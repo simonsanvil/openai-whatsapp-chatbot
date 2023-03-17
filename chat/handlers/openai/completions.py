@@ -7,12 +7,19 @@ from typing import List
 import openai
 from chat.clients import ChatClient
 
+import os
+import promptlayer
+promptlayer.api_key = os.environ.get("PROMPTLAYER_API_KEY")
+
+openai = promptlayer.openai
+
 __all__ = [
     "text_completion",
     "chat_completion",
     "code_generation",
     "whisper_voice_transcription",
     "dalle_text_to_image",
+    "conversation_summary",
 ]
 
 def text_completion(
@@ -54,6 +61,7 @@ def text_completion(
 def chat_completion(
     messages: List[dict],
     model: str = "gpt-3.5-turbo",
+    pl_tags: List[str] = ["Whatsapp", "Chatbot"],
     **kwargs
 ):
     """
@@ -77,6 +85,7 @@ def chat_completion(
     response = openai.ChatCompletion.create(
         model=model,
         messages=messages,
+        pl_tags=["pipeline3", "world"],
         **kwargs
     )
 
@@ -153,6 +162,69 @@ def text_translation(
 
 async def atext_translation(*args, **kwargs):
     return text_translation(*args, **kwargs)
+
+def conversation_summary(
+    #engine: str = "gpt-3.5-turbo",
+    #messeges: List[dict],
+    #**kwargs
+    chat 
+) -> str:
+    """ 
+    Summarizes the conversation so it can be stored in a database.
+
+    Parameters
+    ----------
+    text : str
+        The text to recognize.
+    engine : str, optional
+        The engine to use, by default "gpt-3.5-turbo" for chat completion.
+    prompt : str, optional
+        The prompt to inject into the text to be recognized. - This should be the entire conversation.
+    **kwargs
+        Additional keyword arguments to pass to the Completion API.
+    """
+
+    summerizer_prompt='''
+    Progressively summarize the lines of conversation provided, adding onto the previous summary returning a new summary.
+
+EXAMPLE
+Current summary:
+The human asks what the AI thinks of artificial intelligence. The AI thinks artificial intelligence is a force for good.
+
+New lines of conversation:
+Role: user
+Content: Why do you think artificial intelligence is a force for good?
+Role: assistant
+Content: Because artificial intelligence will help humans reach their full potential.
+
+New summary:
+The human asks what the AI thinks of artificial intelligence. The AI thinks artificial intelligence is a force for good because it will help humans reach their full potential.
+END OF EXAMPLE
+
+Please note that all content from "Role: system" should be ignored
+
+Current summary:
+{current_summary}
+
+
+New lines of conversation:
+{new_lines_of_conversation}
+    '''
+
+    # create a string that is the value of the summerizer_prompt variable with the current_summary and new_lines_of_conversation values filled in
+    
+    summerizer_prompt = f"{summerizer_prompt.format(current_summary='', new_lines_of_conversation=chat.get_conversation())}"
+
+    logging.info(f"Conversation summary prompt:'{summerizer_prompt}'")
+
+    summary = text_completion(prompt=summerizer_prompt, **kwargs)
+
+    logging.info(f"Conversation summary :'{summary}'")
+
+    print(f"/nConversation summary :'{summary}'")
+    
+    return summary
+
 
 def language_detection(
     text: str,
