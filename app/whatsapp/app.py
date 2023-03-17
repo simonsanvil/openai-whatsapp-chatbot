@@ -7,6 +7,7 @@ from chat.handlers.openai import (
     chat_completion as chatgpt_completion,
     # text_completion as chatgpt_completion,
     voice_transcription as whisper_transcription,
+    conversation_summary as conversation_summary
 )
 from app.handlers import (
     check_and_send_image_generation,
@@ -88,6 +89,7 @@ async def reply_to_whatsapp_message():
     msg = verify_and_process_media(new_message, chat)
     # check if the conversation should end
     if message_empty_or_goodbye(msg, chat):
+        conversation_summary(chat)
         return jsonify({"status": "ok"})
     # if this is the first message, ensure the language is set
     logger.info("Chat has %d messages", len(chat.messages))
